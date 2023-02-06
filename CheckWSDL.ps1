@@ -3,7 +3,7 @@ Write-Host $pathName.PathName
 $onlyPath = $pathName.PathName.Split(" ");
 Write-Host $onlyPath[0]
 $gateWayPath = $onlyPath[0]
-
+#TEST
 Set-Location -Path "+$gateWayPath+"
 
 try{
