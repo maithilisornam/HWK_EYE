@@ -1,0 +1,38 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<DataConfigurations>
+  <AssetMatrixConfig>
+  
+      <EBSDbDetails ServerName="10.2.38.108" DataBase="BonusingCore" UserId="sa" Password="abc@123"/>
+    
+  
+      <BCCDbDetails ServerName="10.2.38.108" DataBase="Bally_Core" UserId="sa" Password="abc@123"/>
+    
+    <DbDetails ServerName="10.2.38.108" DataBase="MAY_16_ASSET" UserId="sa" Password="abc@123"/>
+    <SDSConfigs State="VIC">
+      <DbDetails ServerName="10.2.38.108" DataBase="SDS17May" UserId="sa" Password="abc@123"/>
+      <!--<PowerVenueConfigs Site="601">
+        <DbDetails ServerName="10.2.152.137\sql2012" DataBase="PV_1402_SP3_SRINI" UserId="sa" Password="abc@1234"/>
+      </PowerVenueConfigs>-->
+      <PowerVenueConfigs Site="683">
+        <DbDetails ServerName="10.2.152.137\sql2012" DataBase="PV_1402_SP3_SERVER" UserId="sa" Password="abc@1234"/>
+      </PowerVenueConfigs>
+      <!--<PowerVenueConfigs Site="">
+        <DbDetails ServerName="" DataBase="" UserId="" Password=""/>
+      </PowerVenueConfigs>-->
+    </SDSConfigs>
+    <!--<SDSConfigs State="">
+      <DbDetails ServerName="" DataBase="" UserId="" Password=""/>
+      <PowerVenueConfigs Site="">
+        <DbDetails ServerName="" DataBase="" UserId="" Password=""/>
+      </PowerVenueConfigs>
+      <PowerVenueConfigs Site="">
+        <DbDetails ServerName="" DataBase="" UserId="" Password=""/>
+      </PowerVenueConfigs>
+      <PowerVenueConfigs Site="">
+        <DbDetails ServerName="" DataBase="" UserId="" Password=""/>
+      </PowerVenueConfigs>
+    </SDSConfigs>-->
+
+  </AssetMatrixConfig>
+  
+</DataConfigurations>

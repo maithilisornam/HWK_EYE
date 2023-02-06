@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ComponentTypeConfiguration>
+  <ComponentTypes>
+      <PerComponentType  AssetTypeName="Area / Zone / Bank" AmTypeId="57_22010" PvTypeId="1">Area/Zone/Bank</PerComponentType>
+      <PerComponentType  AssetTypeName = "Manufacturer" AmTypeId = "57_22002" PvTypeId="11">Manufacturer</PerComponentType>
+      <PerComponentType  AssetTypeName = "Model Type" AmTypeId = "57_22003" PvTypeId="11">Model Type</PerComponentType>
+      <PerComponentType  AssetTypeName = "Model" AmTypeId = "57_22006" PvTypeId="11">Model</PerComponentType>
+      <!-- PerComponentType  AssetTypeName = "POS Vendor" AmTypeId = "57_22051" PvTypeId="11">POS Vendor</PerComponentType -->
+      <!--<PerComponentType  AssetTypeName = "POS Model" AmTypeId = "57_22052" PvTypeId="11">POS Model</PerComponentType>-->
+      <PerComponentType  AssetTypeName = "Denomination" AmTypeId = "57_22011" PvTypeId="11">Denomination</PerComponentType>
+  </ComponentTypes>
+</ComponentTypeConfiguration>

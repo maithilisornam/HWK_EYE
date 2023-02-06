@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<AssetTypeConfiguration>
+  <AssetTypes>
+    <PerAssetType  AssetTypeName="Slot" AmTypeId="59_10" PvTypeId="1" EBSTypeId="1" BCCTypeId="1">Slot</PerAssetType>
+    <PerAssetType  AssetTypeName = "POS" AmTypeId = "59_305" PvTypeId="17">POS</PerAssetType>
+    <PerAssetType  AssetTypeName = "Controller" AmTypeId = "59_15" PvTypeId="7">Controller</PerAssetType>
+    <PerAssetType  AssetTypeName = "Kiosk" AmTypeId = "59_3" PvTypeId="2">Kiosk</PerAssetType>
+    <PerAssetType  AssetTypeName = "Cashier Work Station" AmTypeId = "59_4" PvTypeId="3">Cashier Work Station</PerAssetType>
+    <PerAssetType  AssetTypeName = "Printer" AmTypeId = "59_8" PvTypeId="4">Printer</PerAssetType>
+    <PerAssetType  AssetTypeName = "Ticket Issuing System" AmTypeId = "59_7" PvTypeId="5">Ticket Issuing System</PerAssetType>
+    <PerAssetType  AssetTypeName = "Redemption Kiosk" AmTypeId = "59_9" PvTypeId="6">Redemption Kiosk</PerAssetType>
+    <PerAssetType  AssetTypeName = "Coupon Issuing System" AmTypeId = "59_2" PvTypeId="8">Coupon Issuing System</PerAssetType>
+    <PerAssetType  AssetTypeName = "S2S Kiosk" AmTypeId = "59_13" PvTypeId="10">S2S Kiosk</PerAssetType>
+    <PerAssetType  AssetTypeName = "Cash Desk" AmTypeId = "59_14" PvTypeId="11">Cash Desk</PerAssetType>
+    <PerAssetType  AssetTypeName = "ACM Caion" AmTypeId = "59_12" PvTypeId="12">ACM Caion</PerAssetType>
+    <PerAssetType  AssetTypeName = "ACM Kiosk" AmTypeId = "59_6" PvTypeId="13">ACM Kiosk</PerAssetType>
+    <PerAssetType  AssetTypeName = "S2S Mobile" AmTypeId = "59_5" PvTypeId="15">S2S Mobile</PerAssetType>
+    <PerAssetType  AssetTypeName = "Insite Controller" AmTypeId = "59_1" PvTypeId="16">Insite Controller</PerAssetType>
+    <PerAssetType  AssetTypeName = "Progressive Pool" AmTypeId = "59_11" PvTypeId="-1">Progressive Pool</PerAssetType>
+    <PerAssetType  AssetTypeName = "Slot Link" AmTypeId = "-2" PvTypeId="-2">Slot Link</PerAssetType>
+  </AssetTypes>
+</AssetTypeConfiguration>

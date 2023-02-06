@@ -1,0 +1,217 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<QueryConfiguration>
+  <Queries>
+    <Query Key="sp_GetAssetOptions">
+      EXEC [dbo].[sp_GetAssetOptions] @assetId = N'{0}'
+    </Query>
+    <Query Key="Q_GetSDSAssetOptions">
+      select acnf.acnf_number as 'ASSET.NUMBER',
+      acnf.acnf_location as 'ASSET.LOCATION',
+      ast.ASST_SERIAL_NUMBER as 'ASSET.SERIAL.NUMBER',
+      ast.ASST_PURCHASED_AMOUNT as 'ASSET.MASTER.PURCHASED.AMOUNT',
+      acnf.EGM_ID as'ASSET.MASTER.EGM.ID',
+      ast.ASST_SOLD_AMOUNT as 'ASSET.MASTER.SOLD.AMOUNT',
+      astt.astt_Name as 'ASSET.MASTER.ASSET.TYPE',
+      ar.area_long_name as 'AREA',
+      zn.area_long_name as 'ZONE',
+      bk.area_long_name as 'BANK',
+      acst.ACST_LONG_NAME as 'ASSET.MASTER.CONFIGURATION.STATUS',
+      acnf.ACNF_POSITION as 'ASSET.ASL.POSITION',
+      naty.NATY_NAME as 'ASSET.MASTER.NETWORK.TYPE',
+      tyc.TYCD_NAME as 'TYPECODE',
+      manf.MANF_LONG_NAME as 'MANUFACTURER',
+      mdl.MODL_PART_NUMBER as 'MODEL',
+      mtyp.MTYP_NAME as 'MODEL.TYPE',
+      acnf.ACNF_LOCATION_X as 'ASSET.MASTER.LOCATION.X',
+      acnf.ACNF_LOCATION_Y as 'ASSET.MASTER.LOCATION.Y',
+      acnf.ACNF_LOCATION_Z as 'ASSET.MASTER.LOCATION.Z' ,
+      acnf.ACNF_LOCATION_R as 'ASSET.MASTER.LOCATION.R',
+      ast.ASST_DISPOSITION as 'ASSET.MASTER.DISPOSITION', opt.OPTN_DESCRIPTION as 'OPTION CODE',adevo.adop_value as 'SDS OPTION VALUE'
+      from asset.ASSET_CONFIGURATION  as acnf WITH (NOLOCK)
+      JOIN asset.asset_device as adev WITH (NOLOCK) on adev.ASST_ID = acnf.asst_id  and acnf.ACNF_DELETED_TS is null
+      LEFT JOIN asset.TYPE_CODE as tyc WITH (NOLOCK) on acnf.TYCD_ID = tyc.tycd_id
+      JOIN asset.asset as ast WITH (NOLOCK) on acnf.ASST_ID = ast.ASST_ID
+      JOIN asset.ASSET_STATUS as astt WITH (NOLOCK) on ast.astt_id = astt.astt_id
+      JOIN asset.model as mdl WITH (NOLOCK) on ast.MODL_ID = mdl.MODL_ID
+      JOIN asset.MANUFACTURE as manf WITH (NOLOCK) on manf.MANF_ID = mdl.MANF_ID
+      JOIN asset.MODEL_MODELTYPE_MAP as mtypMap WITH (NOLOCK) on mdl.MODL_ID = mtypMap.MODL_ID and ast.MODEL_MAP_ID = mtypMap.MODEL_MAP_ID
+      JOIN asset.MODEL_TYPE as mtyp WITH (NOLOCK) on mtypMap.MTYP_ID = mtyp.MTYP_ID
+      JOIN asset.ASSET_DEVICE_OPTION as adevo WITH (NOLOCK) on adevo.adev_id = adev.adev_id
+      JOIN asset.[option] as opt WITH (NOLOCK) on adevo.OPTN_ID = opt.OPTN_ID
+      JOIN asset.area as ar  WITH (NOLOCK) on acnf.area_id = ar.area_id
+      JOIN asset.area as zn  WITH (NOLOCK) on acnf.ACNF_ZONE = zn.AREA_ID
+      JOIN asset.area as bk WITH (NOLOCK) on acnf.ACNF_GROUP = bk.AREA_ID
+      JOIN asset.ASSET_CONFIGURATION_STATUS as acst WITH (NOLOCK) on acnf.acst_id = acst.ACST_ID
+      JOIN asset.NETWORK_ADDRESS_TYPE as naty WITH (NOLOCK) on naty.NATY_ID = ast.NATY_ID
+      and ast.asst_id = adev.ASST_ID
+      and acnf.ASST_ID = ast.asst_id
+      and opt.OPTN_ID = adevo.OPTN_ID
+      and ar.area_id = acnf.area_id
+      and acnf.ASST_ID = adev.ASST_ID
+      and adev.adev_id = adevo.ADEV_ID
+      and ar.ATYP_ID = 1
+      and zn.ATYP_ID = 3
+      and bk.ATYP_ID = 2
+      and ar.AREA_ID = acnf.area_id
+      and zn.AREA_ID = acnf.ACNF_ZONE
+      and bk.AREA_ID = acnf.ACNF_GROUP
+      and acst.ACST_ID = acnf.ACST_ID
+      and naty.NATY_ID = ast.NATY_ID
+      and ar.site_id = N'{0}'
+      and acnf.acnf_number = N'{1}'
+      and opt.optn_code = opt.OPTN_CODE
+      order by opt.OPTN_DESCRIPTION
+    </Query>
+    <Query Key="sp_GetAssetList">
+      EXEC [dbo].[sp_GetAssetList] @AssetTypeId = N'{0}',@SiteNum = N'{1}'
+    </Query>
+    <Query Key="sp_GetAssets">
+      EXEC [dbo].[sp_GetAssets] @AssetTypeId = N'{0}',@SiteNum = N'{1}'
+    </Query>
+    <Query Key="Q_GetAssets_Progressive">
+      SELECT [SiteId] as 'CasinoId' ,[Description] as 'AssetNumber' FROM [Slip].[Progressives] WITH (NOLOCK) WHERE  [SiteId] = N'{0}'
+    </Query>
+    <Query Key="sp_GetSlotLinks">
+      EXEC [dbo].[sp_GetSlotLinks] @SiteList  = N'{0}'
+    </Query>
+    <Query Key="Q_PV_GetSlotLinks">
+      select progSlot.SiteId as SiteNumber, progSlot.AssetNumber as SlotAssetNumber, prog.Name as PoolId
+      from [Slip].[ProgressiveSlot] as progSlot WITH (NOLOCK), [Slip].[Progressives] as prog WITH (NOLOCK)
+      where SlotId = ProgressivesId and progSlot.SiteId = '{0}'
+      order by progSlot.SiteId, progSlot.AssetNumber, prog.Name
+    </Query>
+    <Query Key="Q_PV_GetAssets">
+      SELECT [CasinoId],[AssetNumber] FROM [Asset].[Asset] WITH (NOLOCK)
+      WHERE isDeleted = 0 and [AssetType] = N'{0}'
+      and [CasinoId] = N'{1}'
+    </Query>
+    <Query Key="Q_SDS_GetAssets">
+      select ar.site_id as 'SiteNumber', acnf.acnf_number as 'Asset Number' , acnf.ACNF_ADDRESS as 'Line Address'  from [asset].[asset_Configuration] as acnf WITH (NOLOCK),
+      [asset].[area] as ar WITH (NOLOCK)
+      where acnf.[ACNF_DELETED_TS] is null
+      and ar.[AREA_ID] = acnf.[AREA_ID]
+      and ar.site_id = N'{0}'
+    </Query>
+    <Query Key="Q_EBS_GetAssets">
+      SELECT CasinoId AS 'SiteNumber'
+      , SUBSTRING ( SUBSTRING(SlotNumber, 4, len(SlotNumber)),
+      PATINDEX('%[^0]%',SUBSTRING(SlotNumber, 4, len(SlotNumber))),10)  AS  'Asset Number'
+      FROM MachineMaster WITH (NOLOCK)
+      WHERE MachineType = 1 AND IsActive = 1
+      and CasinoId = N'{0}'
+      ORDER BY CasinoId, SlotNumber
+    </Query>
+    
+    <Query Key="Q_BCC_GetAssets">
+      SELECT a.SiteNumber  AS 'SiteNumber'
+      ,a.AssetNumber AS  'Asset Number'
+      FROM (
+      SELECT SS.SiteNumber AS SiteNumber
+      ,DCE.AssetNumber
+      ,SS.SiteNumber AS location
+      ,CASE
+      WHEN ES.IsResponding = 1
+      THEN 'Online'
+      ELSE 'Offline'
+      END AS SlotStatus
+      ,getdate() AS [date]
+      FROM Bally_core.dbo.EGM E
+      INNER JOIN Bally_core.dbo.EGMStatus ES ON ES.EGMID = E.EGMID
+      INNER JOIN Bally_core.dbo.HostEgm HE ON HE.GSAEgmID = E.GSAEGMID
+      INNER JOIN [Bally_Download].dbo.CoreEGM DCE ON E.EGMID = DCE.CoreEGMID
+      INNER JOIN Bally_DCM_Core.dbo.CoreEGMUISupport CES ON CES.CoreEGMID = DCE.CoreEGMID
+      INNER JOIN Bally_DCM_Core.dbo.SiteSettings SS ON SS.SiteID = DCE.SiteID
+      LEFT JOIN [Bally_Download].dbo.CabinetType CbType ON DCE.CabinetTypeID = CbType.CabinetTypeID
+      LEFT JOIN [Bally_Download].dbo.CoreEGMModuleList CEM ON CEM.CoreEGMId = DCE.CoreEGMID
+      WHERE DCE.MachineTypeID = 2
+      AND DCE.DateTmDeleted IS NULL
+      AND ss.SiteNumber NOT LIKE '1'
+      ) a
+      where a.SiteNumber =  N'{0}'
+      ORDER BY a.SiteNumber, a.AssetNumber
+    </Query>
+    
+    <Query Key="Q_SDS_GetAssets_Progressive">
+      SELECT [SITE_ID] as 'SiteNumber' ,[PRGP_NAME]  as 'Asset Number' FROM [PROGRESSIVE].[POOL] WITH (NOLOCK)
+      WHERE PRGP_DELETED_TS is null
+      and PRGP_DELETED_USER is null
+      and [SITE_ID] = N'{0}'
+    </Query>
+    <Query Key="Q_SDS_GetAssets_NonSlot">
+      select ar.site_id as 'SiteNumber', aast_number as 'Asset Number' from [ASSET].[ASSET_NONSLOT] as assetNonSlot WITH (NOLOCK),
+      [asset].[area] as ar WITH (NOLOCK)
+      where ar.AREA_ID = assetNonSlot.AREA_ID
+      and assetNonSlot.AAST_DELETED_TS is NULL
+      and assetNonSlot.ATYP_ID = N'{0}'
+      and ar.site_id = N'{1}'
+    </Query>
+    <Query Key="Q_SDS_GetAssets_SlotLink">
+      select sl.site_id as SiteNumber, substring(sl.acnf_number, patindex('%[^0]%',sl.acnf_number), 10) as SlotAssetNumber,   replace(pl.PRGP_NAME,'POOLNAME' , '') as PoolId
+      from [Progressive].Slot as sl WITH (NOLOCK), [Progressive].SLOT_METER_MAPPING as slm WITH (NOLOCK), [PROGRESSIVE].[POOL] as pl WITH (NOLOCK)
+      where sl.SLOT_ID =  slm.SLOT_ID
+      and pl.prgp_id = slm.PRGP_ID
+      and sl.site_id = '{0}'
+      and sl.slot_deleted_ts is null
+      and pl.PRGP_DELETED_TS  is null
+      and slm.slt_mtr_map_deleted_Ts is null
+      order by sl.site_id, sl.acnf_number, pl.prgp_name
+    </Query>
+    
+    <Query Key="sp_GetAZBOptions">
+      select rl.cSiteId as [SiteId], JSON_VALUE(ar.Value, '$.Options[0].Value') as [AreaId], JSON_VALUE(ar.Value,'$.DisplayName') as [AreaName], 
+      JSON_VALUE(zn.Value, '$.Options[0].Value') as [ZoneId], JSON_VALUE(zn.Value,'$.DisplayName') as [ZoneName],  
+      JSON_VALUE(bk.Value, '$.Options[0].Value') as [BankId],  JSON_VALUE(bk.Value,'$.DisplayName') as [BankName] from  
+      Components.ComponentDataNew as rl inner join Components.ComponentDataNew as ar on   
+      '57_'+SUBSTRING(JSON_VALUE(rl.[Value],'$.Options[0].Value'), 0, (LEN(JSON_VALUE(rl.[Value],'$.Options[0].Value')) - CHARINDEX('_', REVERSE(JSON_VALUE(rl.[Value],'$.Options[0].Value')))+1)) = ar.[Key] inner join components.ComponentDataNew as zn on  '57_'+SUBSTRING(JSON_VALUE(rl.[Value],'$.Options[1].Value'), 0, (LEN(JSON_VALUE(rl.[Value],'$.Options[1].Value')) - CHARINDEX('_', REVERSE(JSON_VALUE(rl.[Value],'$.Options[1].Value')))+1)) = zn.[Key] inner join Components.ComponentDataNew as bk on 
+      '57_'+SUBSTRING(JSON_VALUE(rl.[Value],'$.Options[2].Value'), 0, (LEN(JSON_VALUE(rl.[Value],'$.Options[2].Value')) - CHARINDEX('_', REVERSE(JSON_VALUE(rl.[Value],'$.Options[2].Value')))+1)) = bk.[Key] where rl.cCompDefId = 22010 and rl.cIsDeleted = 'false' and ar.cIsDeleted = 'false' and zn.cIsDeleted = 'false' and bk.cIsDeleted = 'false' and ar.cCompDefId = '22007'
+      and zn.cCompDefId = '22008' and bk.cCompDefId = '22009' and rl.cSiteId in ('{0}')
+    </Query>
+    <Query Key="Q_SDS_GetAZBOptions">
+      select ar.site_id as 'SiteNumber', ar.AREA_SHORT_NAME as 'Area Short Name', ar.AREA_LONG_NAME as 'Area Long Name',
+      zn.area_short_name as 'Zone Short Name', zn.AREA_LONG_NAME as 'Zone Long Name', bk.AREA_SHORT_NAME as 'Bank Short Name',
+      bk.AREA_LONG_NAME as 'Bank Long Name'
+      from [asset].[area] as ar WITH (NOLOCK), [asset].[area] as zn WITH (NOLOCK), [asset].[area] as bk WITH (NOLOCK)
+      where zn.atyp_id = 3
+      and bk.atyp_id = 2 and ar.atyp_id = 1 and ar.AREA_SHORT_NAME != 'GENERAL'
+      and zn.area_parent_id =  ar.area_id and bk.area_parent_id = zn.area_id
+      and ar.site_id = bk.site_id and ar.site_id = zn.site_id
+      and ar.site_id IN({0})
+      order by ar.site_id,ar.AREA_SHORT_NAME,ar.AREA_LONG_NAME,
+      zn.area_short_name,zn.AREA_LONG_NAME,bk.AREA_SHORT_NAME,bk.AREA_LONG_NAME
+    </Query>
+    <Query Key="Q_PV_GetAZBOptions">
+      select AssArea.CasinoId as 'SiteNumber',AssArea.AreaShortName as 'Area Short Name',AssArea.AreaLongName as 'Area Long Name',
+      AssZone.AreaShortName as 'Zone Short Name',AssZone.AreaLongName as 'Zone Long Name',
+      AssBank.AreaShortName as 'Bank Short Name',AssBank.AreaLongName as 'Bank Long Name'
+      from Asset.Area as AssArea WITH (NOLOCK),Asset.Area as AssZone WITH (NOLOCK), Asset.Area as AssBank WITH (NOLOCK)
+      where AssArea.CasinoId IN({0}) and AssArea.AreaParentId = '0'and AssZone.AreaParentId = AssArea.AreaId and AssBank.AreaParentId = AssZone.AreaId
+      order by AssArea.AreaShortName,AssArea.AreaLongName,AssZone.AreaShortName,AssZone.AreaLongName,AssBank.AreaShortName,AssBank.AreaLongName
+    </Query>
+    <Query Key="sp_GetComponentOptions">
+      EXEC [dbo].[sp_GetManufacturer]
+    </Query>
+    <Query Key="Q_SDS_GetComponentOptions">
+      select MANF_SHORT_NAME, MANF_LONG_NAME from [asset].[Manufacture] WITH (NOLOCK)
+      where MANF_DELETED_TS is null and MANF_DELETED_USER is null and MANF_IS_VENDOR = 0
+    </Query>
+      <Query Key="sp_GetComponentOptionsMDLTYPE">
+      EXEC [dbo].[sp_GetModelTypes]
+    </Query>
+    <Query Key="Q_SDS_GetModelType">
+      select MTYP_NAME from [asset].[MODEL_TYPE] WITH (NOLOCK) where MTYP_DELETED_TS is NULL and MTYP_DELETED_USER is NULL
+    </Query>
+    <Query Key="sp_ModelNames">
+      select JSON_VALUE([Value], '$.DisplayName') as [ModelName] from [Components].ComponentDataNew WITH (NOLOCK) where cCompDefId = 22005 and cIsDeleted = 'false'
+    </Query>
+    <Query Key="Q_SDS_Model">
+      select MODL_PART_NUMBER from [asset].[MODEL] WITH (NOLOCK) where MODL_DELETED_TS is NULL and MODL_DELETED_USER is NULL
+    </Query>
+    <Query Key="sp_GetDenomOrPOSOptions">
+      select JSON_VALUE([Value], '$.DisplayName')  as [Option] from [Components].ComponentDataNew where cCompDefId = 22011 and cIsDeleted = 'false'
+    </Query>
+    <Query Key="Q_SDS_GetDenom">
+      SELECT [DENM_AMOUNT]  FROM [ASSET].[DENOMINATION] WITH (NOLOCK) where [DENM_DELETED_TS] is NULL
+    </Query>
+    <!--<Query Key=""></Query>-->
+  </Queries>
+</QueryConfiguration>
