@@ -1,3 +1,5 @@
+$output = ""
+
 $pathName =  Get-WmiObject win32_service | ?{$_.Name -like 'LnWAPIGatewayService'} | select Name, DisplayName, State, PathName, Path
 $ScriptRoot = Split-Path(Split-Path(Split-Path $pathName.PathName))
 Write-Host $ScriptRoot
@@ -47,12 +49,16 @@ try{
           try{
                 $umService = Invoke-RestMethod -Method Get -Uri $UMUrl #'http://10.2.160.12:8080/UM/UserMatrixWebService?wsdl'
                 Write-Host $umService.InnerXml.Length
+                $output +="{""UM"":""$UMUrl^YES"","
                 if ($umService.InnerXml.Length -gt 200) {
 	                "User Matrix Service is Communicable."
-                }
+                }else{
+                    $output +="{""UM"":""$UMUrl^NO"","
+                 }
             }
             catch{
              "User Matrix Service NOT Communicable."
+              $output +="{""UM"":""$UMUrl^NO"","
             }
 
             $conn.connectionstring = [string]::format("Server={0};Database={1};Trusted_Connection=False;User ID={2};Password={3};",$sqlServer,$DBName,$DBUsername,$DBPassword)
@@ -69,12 +75,19 @@ and json_value(products.[Value], '$.ProductCode') = 'SDS'"
           $SqlCmd.Connection = $conn
           $reader= $SqlCmd.ExecuteReader()
           $tables = @()
+          $cnt = 0
+           $sdsOutput ="" 
 while ($reader.Read()) {
     $tables += $reader["Site"]
+   
     $SDSSiteURL = Invoke-RestMethod -Method Get -Uri $reader["WSDL"]
     Write-Host $SDSSiteURL.InnerXml.Length
                 if ($SDSSiteURL.InnerXml.Length -gt 200) {
+                    $cnt = $cnt + 1
+                    $sdsOutput +='"SDS'+$cnt+'":"'+$reader["WSDL"]+'^YES",'
 	                $reader["WSDL"]+" is Communicable."
+                }else{
+                     $sdsOutput +='"SDS'+$cnt+'":"'+$reader["WSDL"]+'^NO",'
                 }
 }
 $reader.Close()
@@ -87,6 +100,11 @@ $reader.Close()
 catch{
     "Error"
 }
+$sdsOutput = $sdsOutput.Substring(0,$sdsOutput.Length - 1)
+$output = $output+$sdsOutput+"}" 
+$output | ConvertTo-Json -Compress
+write-Host ''
+write-Host ''
+Write-Host $output
 
-
- 
+$output | Out-File "$PSScriptRoot\IntraServiceOutput.json" -Encoding "UTF8"
