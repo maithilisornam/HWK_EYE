@@ -10,7 +10,6 @@ $gateWayPath = $onlyPath[0]
 #Set-Location -Path "+$gateWayPath+"
 
 try{
-    $sdsService =  Invoke-RestMethod -Method Get -Uri 'http://10.2.161.60:18080/GAM/AssetMatrixService?wsdl' 
     
     #Write-Host $ScriptRoot"\LnWAuthenticationService\InitialSetup\ConfigXML\DataConfigurationSection.xml"
     [xml]$Types = Get-Content $ScriptRoot"\LnWAuthenticationService\InitialSetup\ConfigXML\DataConfigurationSection.xml"
@@ -89,42 +88,48 @@ and json_value(products.[Value], '$.ProductCode') = 'SDS'"
           $tables = @()
           $cnt = 0
            $sdsOutput ="" 
-while ($reader.Read()) {
-    $tables += $reader["Site"]
-                $SDSStatus = '{"Purpose": "SDS Data Communication",'
-                
-                $SDSStatus = $SDSStatus + '"wsdl": "'+$reader["WSDL"]+'",'
+    while ($reader.Read()) {
+    try{
+        $tables += $reader["Site"]
+        $SDSStatus = '{"Purpose": "SDS Data Communication",'
+        $cnt = $cnt + 1
+        Write-Host $cnt
+        Write-Host $reader["WSDL"]
+        $SDSStatus = $SDSStatus + '"Name": "SDS ' +$cnt+'",'
+        $SDSStatus = $SDSStatus + '"wsdl": "'+$reader["WSDL"]+'",'
+        $sdsPort = ($reader["WSDL"].Split(':')[2]).Split('//')[0]
+        $SDSStatus = $SDSStatus + '"Port": "'+$sdsPort+'",'
 
-    $SDSSiteURL = Invoke-RestMethod -Method Get -Uri $reader["WSDL"]
-    #Write-Host $SDSSiteURL.InnerXml.Length
-                if ($SDSSiteURL.InnerXml.Length -gt 200) {
-                    $cnt = $cnt + 1
-                    $sdsPort = ($reader["WSDL"].Split(':')[2]).Split('//')[0]
-                    $SDSStatus = $SDSStatus + '"Port": "'+$sdsPort+'",'
-                    $SDSStatus = $SDSStatus + '"Status": "Yes",'
-                    $SDSStatus = $SDSStatus + '"Name": "SDS ' +$cnt+'"'
+        $SDSSiteURL = Invoke-RestMethod -Method Get -Uri $reader["WSDL"]
+        #Write-Host $SDSSiteURL.InnerXml.Length
+        if ($SDSSiteURL.InnerXml.Length -gt 200) {
+            $SDSStatus = $SDSStatus + '"Status": "Yes"'
+            Write-Host $reader["WSDL"]+' is Communicable.'
+        }else{
+            $SDSStatus = $SDSStatus + '"Status": "No"'
+        }
 
-                    
-	                $reader["WSDL"]+" is Communicable."
-                }else{
-                    $SDSStatus = $SDSStatus + '"Status": "No"'
-                }
-
-                $SDSStatus = $SDSStatus + '},'
-                $sdsOutput = $sdsOutput + $SDSStatus
-}
+        $SDSStatus = $SDSStatus + '},'
+        $sdsOutput = $sdsOutput + $SDSStatus
+    } catch{
+        $SDSStatus = $SDSStatus + '"Status": "No"'
+        $SDSStatus = $SDSStatus + '},'
+        $sdsOutput = $sdsOutput + $SDSStatus
+    }
+        
+    }
 $reader.Close()
-               
           $conn.Close()
-          #Write-Host "SDS URL : $SDSUrl"
+          Write-Host "SDS URL : $SDSUrl"
          
       }
 }
 catch{
+
     "Error"
 }
 $sdsOutput = $sdsOutput.Substring(0,$sdsOutput.Length - 1)
-$output = $output+$sdsOutput+"]," 
+$output = $output+$sdsOutput+'],'
 
 
 $overallHardwareInfo = '"Hardwares": [{'
