@@ -152,8 +152,8 @@ $RAMInGB = (Get-CimInstance Win32_PhysicalMemory | Measure-Object -Property capa
 #Write-Host $RAMInGB
 
 $overallHardwareInfo = $overallHardwareInfo +  '"OS": "'+$OSName.Caption+'",'
-$overallHardwareInfo = $overallHardwareInfo +  '"NoOfDrives": '+$Diskcnt+','
-$overallHardwareInfo = $overallHardwareInfo +  '"Processors": '+$totalLogicalCores+','
+$overallHardwareInfo = $overallHardwareInfo +  '"NoOfDrives": "'+$Diskcnt+'",'
+$overallHardwareInfo = $overallHardwareInfo +  '"Processors": "'+$totalLogicalCores+'",'
 $overallHardwareInfo = $overallHardwareInfo +  '"RAM": "'+$RAMInGB+'GB"'
 
 $overallHardwareInfo = $overallHardwareInfo + '}],'
@@ -217,3 +217,5 @@ $output | ConvertTo-Json -Compress
 Write-Host $output
 
 $output | Out-File "$PSScriptRoot\IntraServiceOutput.json" -Encoding "UTF8"
+
+Invoke-WebRequest -Uri "http://inblr-sdsvm13:36/api/Product" -Method POST  -ContentType "application/json" -Body $output
